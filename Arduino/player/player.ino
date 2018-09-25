@@ -1,7 +1,7 @@
 #include "config.h"
 #include "sdcard.h"
 #include "vgmreader.h"
-#include "vgmplayer.h"
+#include "VGMPlayer.h"
 #include "sn76489.h"
 
 /*
@@ -27,7 +27,7 @@
 
       1. Make sure you follow the pinout for your board as described in "pinout.txt"
       2. Uncomment the corresponding line in "config.h" according to your board.
-      3. Set the constant VGM_DIR, line 20 in "config.h", to the directory where your 
+      3. Set the constant VGM_DIR -line 20 in "config.h", to the directory where your 
          VGM files are stored.
  
 */

@@ -1,5 +1,5 @@
 #include "vgmreader.h"
-#include <sdFat.h>
+#include <SdFat.h>
 
 extern File file;
 
