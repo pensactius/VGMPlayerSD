@@ -26,5 +26,5 @@ TEENSY  I/O             ARDUINO UNO     MEGA        DUE
 18      LCD_SDA             A4          20
 19      LCD_SCL             A5          21
 
-22		LOOP_PIN						43			43
-23		NEXT_PIN						42			42
+22      LOOP_PIN                        43          43
+23      NEXT_PIN                        42          42
