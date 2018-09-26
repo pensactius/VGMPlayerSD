@@ -22,7 +22,7 @@ const int chipSelect = 53;
 const int chipSelect = 53;
 #endif
 
-bool SDInit(const char *dirName);
+void SDInit(const char *dirName);
 bool SDOpen(const char *fileName);
 bool SDClose();
 bool SDNext();

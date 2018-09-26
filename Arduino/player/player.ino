@@ -1,3 +1,20 @@
+/* VGMPlayerSD, a Video Game Music player with Arduino and hardware audio ICs.
+   Copyright (C) 2018  Andrés Mata Bretón
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA 
+*/
 #include "config.h"
 #include "sdcard.h"
 #include "vgmreader.h"
@@ -23,16 +40,23 @@
     Different boards use different pinout for connections. Please, make sure you follow
     the pinout for your board as described in the file "pinout.txt".
 
+    This project requires the SdFat library installed. You can download the latest 
+    version from:
+
+      https://github.com/greiman/SdFat
+
     Step by step compilation process:
 
       1. Make sure you follow the pinout for your board as described in "pinout.txt"
       2. Uncomment the corresponding line in "config.h" according to your board.
       3. Set the constant VGM_DIR -line 20 in "config.h", to the directory where your 
          VGM files are stored.
- 
+      4. Install the SdFat library from "https://github.com/greiman/SdFat"
 */
 
-void setup() {  
+void setup() 
+{  
+
   // Open serial communication and wait for port to open:
   Serial.begin(9600);
 
@@ -44,8 +68,16 @@ void setup() {
   //  ; // wait for serial port to connect. Needed for native USB port only
   //}
 
+  // Try to read the SD card and "chdir" to VGM_DIR
   SDInit(VGM_DIR);
+
+  // If the above was successful create a new VGMPlayer object to play
+  // all the vgm files in VGM_DIR
   VGMPlayer vgmPlayer;
+
+  // Main loop: open next file in VGM_DIR, and if it's a supported vgm
+  // file play it, close the file (or directory) and continue to next file.
+  // Keep doing it until it reaches the last file in VGM_DIR directory.
   while (SDNext())
   {
     if (vgmPlayer.read())    
@@ -59,6 +91,7 @@ void setup() {
   Serial.println(F("Done!"));
 }
 
-void loop() {
-  
-}
+/*
+    Nothing to do in loop(), everything is handled in setup()
+ */
+void loop() {}
