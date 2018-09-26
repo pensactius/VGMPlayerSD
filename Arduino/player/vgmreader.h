@@ -6,7 +6,7 @@
 #ifdef ARDUINO_UNO
 #define BUFSIZE 256  
 #endif  
-#ifdef ARDUINO_DUE
+#if (defined ARDUINO_DUE || defined ARDUINO_MEGA)
 #define BUFSIZE 2048
 #endif  
 

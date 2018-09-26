@@ -26,10 +26,10 @@
  *  ARDUINO_DUE
  ************************************************************************/
 //#define ARDUINO_UNO
-//#define ARDUINO_MEGA
-#define ARDUINO_DUE
+#define ARDUINO_MEGA
+//#define ARDUINO_DUE
 
-#if defined ARDUINO_DUE || ARDUINO_MEGA
+#if (defined ARDUINO_DUE) || (defined ARDUINO_MEGA)
 #define LOOP_PIN  43  // Switch button to en/disable vgm loop
 #define NEXT_PIN  42  // Push button for next song
 #endif

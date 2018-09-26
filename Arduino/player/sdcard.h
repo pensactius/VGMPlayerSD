@@ -1,25 +1,24 @@
 #ifndef _GD3_H_
-#define _GD3_H
+#define _GD3_H_
 
 #include "config.h"
 
 /***********************************************************************
  *The circuit:
  * SD card attached to SPI bus as follows:
- ** MOSI - pin 11 on Arduino Uno, 51 on Mega 2560, SPI MOSI on DUE
- ** MISO - pin 12 on Arduino Uno/Duemilanove/Diecimila
- ** CLK - pin 13 on Arduino Uno/Duemilanove/Diecimila
- ** CS - depends on your SD card shield or module.
-     Pin 4 used here for consistency with other Arduino examples
+ ** MOSI - pin 51 on Arduino MEGA, MOSI(A26) at SPI header on DUE, 
+           pin 11 on Arduino Uno
+ ** MISO - pin 50 on Arduino MEGA, MISO(A25) at SPI header on DUE, 
+           pin 12 on Arduino Uno
+ ** CLK  - pin 52 on Arduino MEGA, SCK(A27) at SPI header on DUE, 
+           pin 13 on Arduino Uno
+ ** CS   - defined below as chipSelect     
  ************************************************************************/
 #ifdef ARDUINO_UNO
-const int chipSelect = 10;
+#define chipSelect 10
 #endif
-#ifdef ARDUINO_MEGA
-const int chipSelect = 53;
-#endif
-#ifdef ARDUINO_DUE
-const int chipSelect = 53;
+#if (defined ARDUINO_MEGA) || (defined ARDUINO_DUE)
+#define chipSelect 53
 #endif
 
 void SDInit(const char *dirName);

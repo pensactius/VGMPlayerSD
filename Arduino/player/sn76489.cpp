@@ -30,9 +30,14 @@ a la hora de enviarlos por el puerto correspondiente (PORTD o PORTB).
 #endif
 
 #ifdef ARDUINO_DUE
-  // Send data byte to C2-C9 (Pin34-Pin41)
+  // Send data byte to C2-C9 (pin 34 .. pin 41)
   PIOC->PIO_OWER = 0x03FE;
   PIOC->PIO_ODSR = data << 2;
+#endif
+#ifdef ARDUINO_MEGA
+  // Send data byte to PA0-PA7 (pin 22 .. pin 29)
+  PORTA = data;
+#endif
 
 // ~WE and ~CE low (active)
   digitalWrite(A0, 0);
@@ -41,9 +46,9 @@ a la hora de enviarlos por el puerto correspondiente (PORTD o PORTB).
   
   // ~WE and ~CE high (inactive)
   digitalWrite(A0, 1);
-  
 
-#endif
+
+
 }
 
 void SN76489SetBus() {
@@ -57,9 +62,17 @@ void SN76489SetBus() {
 
 #ifdef ARDUINO_DUE
   for (uint8_t i = 34; i <=41; i++) pinMode(i, OUTPUT);
-  pinMode(A0, OUTPUT);
   Serial.println(F("SN76489 initialized"));
 #endif
+
+// On Arduino MEGA PORTA is the data bus, we must set all
+// pins in PORTA as OUTPUTs.
+#ifdef ARDUINO_MEGA
+  DDRA = 0xFF;
+#endif
+
+// On all boards A0 is CE for SN-76489 and it's an OUTPUT.
+  pinMode(A0, OUTPUT);
 }
 
 void SN76489_Off() {

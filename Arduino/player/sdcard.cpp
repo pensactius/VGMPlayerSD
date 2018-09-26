@@ -56,7 +56,6 @@ void SDInit(const char *path)
     SD.initErrorHalt(F("Chdir failed, make sure path is correct"));
 }
 
-
 /*
   SDOpen()
     Opens the specified file in the SD card.
