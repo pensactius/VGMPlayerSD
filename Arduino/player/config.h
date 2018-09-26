@@ -34,6 +34,15 @@
 #define NEXT_PIN  42  // Push button for next song
 #endif
 
+/* Constant for SN-76489 ~WE/~OE.
+   Technically there should be two sepparate output pins, one for ~WE and
+   another for ~OE. But since they are active/inactive at the same time
+   on write operations it's enough with one input and wiring ~WE/~OE
+   together.
+*/
+#define PSG_WE    A0
+
+// Root directory to read songs from
 #define VGM_DIR "songs/Sonic The Hedgehog"
 
 #endif
