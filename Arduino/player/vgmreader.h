@@ -19,6 +19,7 @@
 #define _VGMREADER_H_
 #include <Arduino.h>
 #include "config.h"
+#include "lcd.h"
 
 #ifdef ARDUINO_UNO
 #define BUFSIZE 256  
@@ -44,16 +45,20 @@ public:
   VGMReader();
   bool read();
   void dumpHeader();
+  void dumpHeader(LCD &);
   void getVersion(uint8_t &major, uint8_t &minor);
   uint16_t readData(uint32_t offset);
   uint8_t nextByte();
   uint32_t getCursor();
   uint32_t getDataLength();
   void loop();
+  uint8_t getTrackNameLength();
+  uint8_t getGameNameLength();
 
 private:
   bool parseHeader();
   void parseGD3Info();
+  void readGD3String (uint32_t &offset, char *strValue);
 
   VGMHeader m_header;
   uint32_t  m_vgmDataOffset;
@@ -62,6 +67,9 @@ private:
 
   uint16_t  m_bufCursor;    // position in buffer
   uint32_t  m_fileCursor;   // position in whole file
+
+  uint8_t   m_GD3TrackName[40] {0};
+  uint8_t   m_GD3GameName[40] {0};
 };
 
 #endif

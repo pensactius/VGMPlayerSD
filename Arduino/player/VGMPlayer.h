@@ -19,6 +19,7 @@
 #define _VGMPlayer_H_
 
 #include "vgmreader.h"
+//#include "lcd.h"
 
 #define WAIT60TH 1000 / 60 // delay in ms for 60th frame of a second
 #define WAIT50TH 1000 / 50 // delay in ms for 60th frame of a second
@@ -29,8 +30,11 @@ public:
   VGMPlayer();
   bool read();
   void play();
+  void print(const char *msg, uint8_t col=0, uint8_t row=0);
 private:
   VGMReader m_vgm;
   uint8_t m_addr, m_data;
+  LCD m_lcd;
+  unsigned long current_time;
 };
 #endif

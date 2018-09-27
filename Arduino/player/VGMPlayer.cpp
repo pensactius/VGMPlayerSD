@@ -28,14 +28,14 @@ bool VGMPlayer::read()
 {
   SN76489_Off(); 
   if (!m_vgm.read()) return false;
-  m_vgm.dumpHeader();
+  m_vgm.dumpHeader(m_lcd);
   return true;
 }
 
 void VGMPlayer::play()
 {  
   //bool loop = false;
-  
+  current_time = millis();
   while (1) {
     // Skip to next song if NEXT button pressed
     if (digitalRead (NEXT_PIN) == 0) return;
@@ -121,7 +121,18 @@ void VGMPlayer::play()
         SN76489_Off();
         for(;;);
     } // switch
+    if ( (m_vgm.getTrackNameLength() > 16 || m_vgm.getGameNameLength() > 16) 
+        && (millis() - current_time > 1500) ) {
+      current_time = millis();
+      m_lcd.scroll();
+    }
   } // while    
   SN76489_Off();  
+}
+
+void VGMPlayer::print(const char *msg, uint8_t col = 0, uint8_t row = 0)
+{
+  m_lcd.clear();
+  m_lcd.print (msg, col, row);
 }
 

@@ -32,7 +32,7 @@ bool VGMReader::read()
   m_dataLength = m_header.gd3Offset - m_vgmDataOffset;
   m_fileCursor = m_vgmDataOffset;
   readData(m_fileCursor);
-  file.printName(&Serial);Serial.println();
+  //file.printName(&Serial);Serial.println();
   return true;
 }
 bool VGMReader::parseHeader()
@@ -120,3 +120,15 @@ void VGMReader::dumpHeader()
   Serial.print(F("Data length\t\t")); Serial.println(m_dataLength);
 }
 
+void VGMReader::dumpHeader(LCD &lcd)
+{  
+  Serial.println((char *)m_GD3GameName);
+  lcd.clear();
+  lcd.print(m_GD3TrackName, 0, 0);
+  lcd.print(m_GD3GameName, 0, 1);
+  Serial.println(strlen(m_GD3TrackName));
+  Serial.println(strlen(m_GD3GameName));
+}
+
+uint8_t VGMReader::getTrackNameLength() { return strlen(m_GD3TrackName);}
+uint8_t VGMReader::getGameNameLength() { return strlen(m_GD3GameName);}

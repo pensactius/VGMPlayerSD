@@ -54,6 +54,35 @@
       4. Install the SdFat library from "https://github.com/greiman/SdFat"
 */
 
+/*
+  InitBus()
+    Initializes (sets pins as outputs) all the busses: common data bus and each
+    audio chip control bus.
+*/
+void initBus()
+{
+  // Set data bus pins as outputs
+  #ifdef ARDUINO_UNO  
+  DDRB |= 0x17; // Bits PB4, PB2, PB1 and PB0 (D12, D10, D9,D8) como Salida
+  DDRD |= 0xfc; // Bits PD2 to PD7  (D2-D7) como Salida
+
+  // ~WE y ~CE a high (InActive)
+  PORTB |= B00010100;
+#endif
+#ifdef ARDUINO_DUE
+  for (uint8_t i = 34; i <=41; i++) pinMode(i, OUTPUT);
+  Serial.println(F("SN76489 initialized"));
+#endif
+  // On Arduino MEGA PORTA is the data bus, we must set all
+  // pins in PORTA as OUTPUTs.
+#ifdef ARDUINO_MEGA
+  DDRA = 0xFF;
+#endif
+
+  // Configure control bus on each audio chip
+  SN76489SetBus();
+}
+
 void setup() 
 {  
 
@@ -63,7 +92,10 @@ void setup()
   // Initialize button pins
   pinMode (LOOP_PIN, INPUT_PULLUP);
   pinMode (NEXT_PIN, INPUT_PULLUP);
-  
+
+  // Configure data and ctrl bus
+  initBus();
+
   //while (!Serial) {
   //  ; // wait for serial port to connect. Needed for native USB port only
   //}
@@ -88,7 +120,8 @@ void setup()
     }
     SDClose();
   }
-  Serial.println(F("Done!"));
+  vgmPlayer.print("Done!");
+  SN76489_Off(); 
 }
 
 /*
