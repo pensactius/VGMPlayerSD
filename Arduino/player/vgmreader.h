@@ -43,9 +43,10 @@ class VGMReader
 {
 public:
   VGMReader();
+  void attachLCD(LCD *);
   bool read();
   void dumpHeader();
-  void dumpHeader(LCD &);
+  void printGD3();
   void getVersion(uint8_t &major, uint8_t &minor);
   uint16_t readData(uint32_t offset);
   uint8_t nextByte();
@@ -70,6 +71,7 @@ private:
 
   uint8_t   m_GD3TrackName[40] {0};
   uint8_t   m_GD3GameName[40] {0};
+  LCD       *m_lcd;
 };
 
 #endif

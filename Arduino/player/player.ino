@@ -84,7 +84,16 @@ void initBus()
 }
 
 void setup() 
-{  
+{ 
+
+  // Configure ~WE/ ~OE as input pullup
+  pinMode (PSG_WE, INPUT_PULLUP);
+
+  // Configure data and ctrl bus
+  initBus();
+
+  // Volume off 
+  SN76489_Off();  
 
   // Open serial communication and wait for port to open:
   Serial.begin(9600);
@@ -93,19 +102,18 @@ void setup()
   pinMode (LOOP_PIN, INPUT_PULLUP);
   pinMode (NEXT_PIN, INPUT_PULLUP);
 
-  // Configure data and ctrl bus
-  initBus();
-
   //while (!Serial) {
   //  ; // wait for serial port to connect. Needed for native USB port only
   //}
+  
+  LCD lcd;
 
   // Try to read the SD card and "chdir" to VGM_DIR
-  SDInit(VGM_DIR);
+  if (!SDInit(VGM_DIR, lcd)) return;
 
   // If the above was successful create a new VGMPlayer object to play
   // all the vgm files in VGM_DIR
-  VGMPlayer vgmPlayer;
+  VGMPlayer vgmPlayer(&lcd);
 
   // Main loop: open next file in VGM_DIR, and if it's a supported vgm
   // file play it, close the file (or directory) and continue to next file.
@@ -120,7 +128,7 @@ void setup()
     }
     SDClose();
   }
-  vgmPlayer.print("Done!");
+  lcd.print("Done!");
   SN76489_Off(); 
 }
 

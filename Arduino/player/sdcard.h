@@ -19,6 +19,7 @@
 #define _GD3_H_
 
 #include "config.h"
+#include "lcd.h"
 
 /***********************************************************************
  *The circuit:
@@ -38,8 +39,8 @@
 #define chipSelect 53
 #endif
 
-void SDInit(const char *dirName);
-bool SDOpen(const char *fileName);
+bool SDInit(const char *dirName, LCD &lcd);
+bool SDOpen(const char *fileName, LCD &lcd);
 bool SDClose();
 bool SDNext();
 

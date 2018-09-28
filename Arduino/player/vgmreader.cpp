@@ -16,13 +16,14 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA 
 */
 #include "vgmreader.h"
+#include "sn76489.h"
 #include <SdFat.h>
 
 extern File file;
 
-VGMReader::VGMReader() : m_vgmDataOffset(0), m_dataLength(0), m_bufCursor(0)
-{
-}
+VGMReader::VGMReader() : m_vgmDataOffset(0), m_dataLength(0), m_bufCursor(0) {}
+
+void VGMReader::attachLCD(LCD *lcd) { m_lcd = lcd; }
 
 bool VGMReader::read()
 {
@@ -77,7 +78,13 @@ uint32_t VGMReader::getDataLength()
 uint16_t VGMReader::readData(uint32_t offset)
 {  
   file.seekSet(offset);
-  file.read(m_buf, sizeof(m_buf));
+  if ( file.read ( m_buf, sizeof (m_buf) ) == -1) { 
+    SN76489_Off();
+    m_lcd->clear();
+    m_lcd->print("Read error!");
+    for(;;);
+  }
+//  Serial.print(F("."));
   m_bufCursor = 0;
 }
 
@@ -98,7 +105,7 @@ uint32_t VGMReader::getCursor()
 void VGMReader::loop()
 {  
   readData(m_header.loopOffset+m_vgmDataOffset);
-  Serial.print(F("Loop to "));Serial.println(m_header.loopOffset+m_vgmDataOffset,HEX);
+  //Serial.print(F("Loop to "));Serial.println(m_header.loopOffset+m_vgmDataOffset,HEX);
   m_fileCursor = m_header.loopOffset+m_vgmDataOffset;
 }
 
@@ -120,14 +127,14 @@ void VGMReader::dumpHeader()
   Serial.print(F("Data length\t\t")); Serial.println(m_dataLength);
 }
 
-void VGMReader::dumpHeader(LCD &lcd)
+void VGMReader::printGD3()
 {  
-  Serial.println((char *)m_GD3GameName);
-  lcd.clear();
-  lcd.print(m_GD3TrackName, 0, 0);
-  lcd.print(m_GD3GameName, 0, 1);
-  Serial.println(strlen(m_GD3TrackName));
-  Serial.println(strlen(m_GD3GameName));
+  //Serial.println((char *)m_GD3GameName);
+  m_lcd->clear();
+  m_lcd->print(m_GD3TrackName, 0, 0);
+  m_lcd->print(m_GD3GameName, 0, 1);
+  //Serial.println(strlen(m_GD3TrackName));
+  //Serial.println(strlen(m_GD3GameName));
 }
 
 uint8_t VGMReader::getTrackNameLength() { return strlen(m_GD3TrackName);}

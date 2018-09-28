@@ -8,7 +8,7 @@ LCD::LCD() : m_lcd(0x3f, 20, 4)
 	m_lcd.backlight();	
 	m_lcd.clear();
 }
-void LCD::print(const char *msg, uint8_t col, uint8_t row)
+void LCD::print(const char *msg, uint8_t col=0, uint8_t row=0)
 {
 	m_lcd.setCursor (col, row);
 	m_lcd.print (msg);

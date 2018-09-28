@@ -36,24 +36,38 @@ File file;
     If it succeeds it chdirs to the specified directory in the parameter.
 
   Parameters
-    [in] path: Full path to chdir 
+    [in] path: Full path to chdir
+    [Out] True if successfully SD card initialized and chdir to directory,
+          False otherwise.
 
 */
-void SDInit(const char *path)
+bool SDInit(const char *path, LCD &lcd)
 {
-  Serial.print(F("\nInitializing SD card...\n"));
+  //Serial.print(F("\nInitializing SD card...\n"));
+  lcd.print("Init. SD card", 0,0);
 
   // Try to initialize the SD card at speed of 50MHz. If this fails, try
   // with a number < 50 until it succeeds.
   if(!SD.begin(chipSelect,SD_SCK_MHZ(50)))
-    SD.initErrorHalt();
+  {
+    lcd.print("Init failed!", 0, 1);
+    SD.initErrorHalt();    
+  }
   
-  Serial.println(F("Wiring is correct and a card is present."));
-  Serial.println(F("initialization done."));   
+  //Serial.println(F("Wiring is correct and a card is present."));
+  //Serial.println(F("initialization done."));   
+  //lcd.print("Success!", 0, 1);
 
   // Set volume working directory vwd to root.
   if (!SD.chdir(path, true))
-    SD.initErrorHalt(F("Chdir failed, make sure path is correct"));
+  {    
+    //SD.initErrorHalt(F("Chdir failed, make sure path is correct"));
+    lcd.clear();
+    lcd.print("Chdir failed", 0, 0);
+    lcd.print("Incorrect path?", 0, 1);
+    return false;
+  }
+  return true;
 }
 
 /*
@@ -66,8 +80,9 @@ void SDInit(const char *path)
   Returns
     True if file was successfully opened, False otherwise.
 */
-bool SDOpen(const char *fileName)
+bool SDOpen(const char *fileName, LCD &lcd)
 {
+/*
   Serial.print(F("\nOpening file "));Serial.println(fileName);
   if (!SD.exists(fileName))
   {
@@ -75,9 +90,10 @@ bool SDOpen(const char *fileName)
     Serial.println(F("' not found\n"));    
     return false;
   }
-
+*/
   if (!file.open(fileName)) {
-    Serial.println(F("Error opening file")); 
+    //Serial.println(F("Error opening file")); 
+    lcd.print("Error opening", 0,0); lcd.print("file", 0,1);
     return false;
   }
   return true;

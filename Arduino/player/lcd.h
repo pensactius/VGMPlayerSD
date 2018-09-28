@@ -1,3 +1,5 @@
+#ifndef _LCD_H_
+#define _LCD_H_
 #include <LiquidCrystal_I2C.h>
 
 /*
@@ -12,9 +14,10 @@ class LCD
 {
 public:
 	LCD();
-	void print(const char *msg, uint8_t col, uint8_t row);
+	void print(const char *msg, uint8_t col=0, uint8_t row=0);
 	void clear();
 	void scroll();
 private:
 	LiquidCrystal_I2C m_lcd;	
 };
+#endif

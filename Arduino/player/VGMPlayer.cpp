@@ -19,16 +19,19 @@
 #include "sdcard.h"
 #include "sn76489.h"
 
-VGMPlayer::VGMPlayer() : m_addr(0), m_data(0)
+VGMPlayer::VGMPlayer(LCD *lcd) : m_addr(0), m_data(0)
 {  
   SN76489SetBus();
+  m_vgm.attachLCD (lcd);
+  m_lcd = lcd;
 }
 
 bool VGMPlayer::read()
 {
   SN76489_Off(); 
   if (!m_vgm.read()) return false;
-  m_vgm.dumpHeader(m_lcd);
+  //m_vgm.dumpHeader();
+  m_vgm.printGD3();
   return true;
 }
 
@@ -124,15 +127,16 @@ void VGMPlayer::play()
     if ( (m_vgm.getTrackNameLength() > 16 || m_vgm.getGameNameLength() > 16) 
         && (millis() - current_time > 1500) ) {
       current_time = millis();
-      m_lcd.scroll();
+      m_lcd->scroll();
     }
   } // while    
   SN76489_Off();  
 }
 
+/*
 void VGMPlayer::print(const char *msg, uint8_t col = 0, uint8_t row = 0)
 {
   m_lcd.clear();
   m_lcd.print (msg, col, row);
 }
-
+*/
