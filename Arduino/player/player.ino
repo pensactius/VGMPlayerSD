@@ -20,6 +20,7 @@
 #include "vgmreader.h"
 #include "VGMPlayer.h"
 #include "sn76489.h"
+#include "ym2612.h"
 
 /*
     Reads VGM (Video Game Music) files stored in the SD card and plays
@@ -81,6 +82,7 @@ void initBus()
 
   // Configure control bus on each audio chip
   SN76489SetBus();
+  YM2612Reset();
 }
 
 void setup() 
@@ -93,7 +95,8 @@ void setup()
   initBus();
 
   // Volume off 
-  SN76489_Off();  
+  SN76489_Off();
+  YM2612Off();
 
   // Open serial communication and wait for port to open:
   Serial.begin(9600);
@@ -124,12 +127,14 @@ void setup()
     { 
       delay(500);      
       vgmPlayer.play();
-      SN76489_Off();       
+      SN76489_Off();
+      YM2612Off();
     }
     SDClose();
   }
   lcd.print("Done!");
   SN76489_Off(); 
+  YM2612Off();
 }
 
 /*

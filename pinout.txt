@@ -17,11 +17,12 @@ TEENSY  I/O             ARDUINO UNO     MEGA        DUE
 13      SD_CLK              13          52          SPI SCK(A27)
 
 3       PSG_OE + PSG_WE     A0          A0          A0
-4       YM2612_A0           A1          A1
-9       YM2612_A1           A2          A2
-15      YM2612_IC           A3          A3
-16      YM2612_CS           0           A4
-17      YM2612_WR           1           A5
+4       YM2612_A1           A1          A1
+9       YM2612_A0           A2          A2
+15      YM2612_RD           A3          A3
+16      YM2612_WR           0           A4
+17      YM2612_CS           1           A5
+		YM2612_IC			?			A6
 
 18      LCD_SDA             A4          20
 19      LCD_SCL             A5          21

@@ -18,6 +18,7 @@
 #include "VGMPlayer.h"
 #include "sdcard.h"
 #include "sn76489.h"
+#include "ym2612.h"
 
 VGMPlayer::VGMPlayer(LCD *lcd) : m_addr(0), m_data(0)
 {  
@@ -56,7 +57,21 @@ void VGMPlayer::play()
         m_data = m_vgm.nextByte();
         SN76489WriteData (m_data);        
         break;
-      
+
+    /* 0x52 aa dd: YM2612 Port0, write value dd to register aa
+       0x53 aa dd: YM2612 Port1, write value dd to register aa */
+      case 0x52:
+        m_addr = m_vgm.nextByte();
+        m_data = m_vgm.nextByte();
+        SN76489_Off();
+        YM2612WritePort0 (m_addr, m_data);
+        break;
+      case 0x53:
+        m_addr = m_vgm.nextByte();
+        m_data = m_vgm.nextByte();
+        SN76489_Off();
+        YM2612WritePort1 (m_addr, m_data);
+        break;
       case 0x61:
       {
         uint8_t lo = m_vgm.nextByte();
@@ -122,6 +137,7 @@ void VGMPlayer::play()
         Serial.print(F(" "));
         Serial.println(F("UNKNOWN cmd!"));
         SN76489_Off();
+        YM2612Off();
         for(;;);
     } // switch
     if ( (m_vgm.getTrackNameLength() > 16 || m_vgm.getGameNameLength() > 16) 
@@ -130,7 +146,8 @@ void VGMPlayer::play()
       m_lcd->scroll();
     }
   } // while    
-  SN76489_Off();  
+  SN76489_Off();
+  YM2612Off();
 }
 
 /*
