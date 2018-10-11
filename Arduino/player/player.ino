@@ -82,7 +82,7 @@ void initBus()
 
   // Configure control bus on each audio chip
   SN76489SetBus();
-  YM2612Reset();
+  YM2612SetBus();
 }
 
 void setup() 
@@ -93,10 +93,6 @@ void setup()
 
   // Configure data and ctrl bus
   initBus();
-
-  // Volume off 
-  SN76489_Off();
-  YM2612Off();
 
   // Open serial communication and wait for port to open:
   Serial.begin(9600);
@@ -127,14 +123,13 @@ void setup()
     { 
       delay(500);      
       vgmPlayer.play();
-      SN76489_Off();
-      YM2612Off();
     }
     SDClose();
   }
+  lcd.clear();
   lcd.print("Done!");
   SN76489_Off(); 
-  YM2612Off();
+  YM2612Reset();
 }
 
 /*

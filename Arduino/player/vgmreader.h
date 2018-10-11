@@ -48,8 +48,10 @@ public:
   void dumpHeader();
   void printGD3();
   void getVersion(uint8_t &major, uint8_t &minor);
-  uint16_t readData(uint32_t offset);
-  uint8_t nextByte();
+  uint16_t readData(uint32_t offset, bool srcPCM = false);
+  uint8_t nextByte(bool srcPCM = false);
+  void pcmBegin();
+  void pcmNewOffset();
   uint32_t getCursor();
   uint32_t getDataLength();
   void loop();
@@ -63,11 +65,17 @@ private:
 
   VGMHeader m_header;
   uint32_t  m_vgmDataOffset;
-  uint32_t  m_dataLength;    // # bytes in vgm data
-  uint8_t   m_buf[BUFSIZE];
+  uint32_t  m_dataLength;       // # bytes in vgm data
+  uint8_t   m_buf[BUFSIZE];     // VGM data buffer
+  uint8_t   m_pcmBuf[BUFSIZE];  // PCM data buffer
+  uint32_t  m_pcmStart;         // offset in file where pcm data starts
+  uint32_t  m_pcmLength;        // # bytes in pcm data
 
-  uint16_t  m_bufCursor;    // position in buffer
-  uint32_t  m_fileCursor;   // position in whole file
+  uint16_t  m_bufCursor;        // position in buffer
+  uint16_t  m_pcmCursor;        // position in pcm buffer
+  uint32_t  m_pcmNextPage;      // position in file where next pcm chunk
+                                // will be read from.
+  uint32_t  m_fileCursor;       // position in whole file
 
   uint8_t   m_GD3TrackName[40] {0};
   uint8_t   m_GD3GameName[40] {0};

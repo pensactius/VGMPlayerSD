@@ -21,7 +21,8 @@
 
 extern File file;
 
-VGMReader::VGMReader() : m_vgmDataOffset(0), m_dataLength(0), m_bufCursor(0) {}
+VGMReader::VGMReader() : m_vgmDataOffset(0), m_dataLength(0), m_bufCursor(0), 
+  m_pcmCursor {0}, m_pcmNextPage {0}, m_fileCursor{0} {}
 
 void VGMReader::attachLCD(LCD *lcd) { m_lcd = lcd; }
 
@@ -75,26 +76,95 @@ uint32_t VGMReader::getDataLength()
     return m_dataLength;
 }
 
-uint16_t VGMReader::readData(uint32_t offset)
-{  
+uint16_t VGMReader::readData(uint32_t offset, bool srcPCM = false)
+{
+  uint16_t &bufCursor = srcPCM ? m_pcmCursor : m_bufCursor;
+  uint8_t (&buf)[BUFSIZE] = srcPCM ? m_pcmBuf : m_buf;
   file.seekSet(offset);
-  if ( file.read ( m_buf, sizeof (m_buf) ) == -1) { 
+  if ( file.read ( buf, sizeof (buf) ) == -1) { 
     SN76489_Off();
     m_lcd->clear();
     m_lcd->print("Read error!");
     for(;;);
   }
+  bufCursor = 0;
 //  Serial.print(F("."));
-  m_bufCursor = 0;
 }
 
-uint8_t VGMReader::nextByte()
+uint8_t VGMReader::nextByte(bool srcPCM = false)
 {
-  if (m_bufCursor == BUFSIZE) {
-    readData (m_fileCursor);
+  if (!srcPCM) {
+    if (m_bufCursor == BUFSIZE) {    
+      readData (m_fileCursor);
+    }
+    m_fileCursor++;
+    return m_buf[m_bufCursor++];
   }
-  m_fileCursor++;
-  return m_buf[m_bufCursor++];
+  else {    
+    if (m_pcmCursor == BUFSIZE) {      
+      //Serial.println ("Next PCM chunk");  
+      readData (m_pcmNextPage, true);
+      m_pcmNextPage += BUFSIZE;
+    }
+    return m_pcmBuf[m_pcmCursor++];
+  }
+  
+}
+
+void VGMReader::pcmBegin()
+{   
+  // pcmBegin() is called right after cmd 0x67 is
+  // found on the VGM stream. 
+  // Parse 0x67 0x66 tt ss ss ss ss (data)  
+  // Skip 0x66 
+  file.seekSet(++m_fileCursor);         
+  uint8_t tt;
+  // and read tt value
+  m_fileCursor += file.read (&tt, 1);     
+  // only uncompressed pcm data is supported
+  if (tt > 0x40) {                      
+    Serial.println (F("Unsupported PCM"));
+    return;
+  }
+  else {
+    uint32_t pcmOffset {0};                 
+    // get pcm length
+    m_fileCursor += file.read (&m_pcmLength, 4);
+    m_pcmStart = m_fileCursor;
+    // Offset in file for the next pcm data chunk
+    m_pcmNextPage = m_fileCursor + BUFSIZE;
+      
+    // I am commenting out reading a pcm chunk now, since usually
+    // a 0xE0 cmd will follow a 0x67 to actually set the
+    // pcm offset.
+
+    // Cursor in pcm data starts at offset 0
+    //m_pcmCursor = 0;
+    
+    // Read BUFSIZE pcm data into pcm buffer
+    //readData (m_pcmStart, true);    
+    // VGM data continues after pcm data section
+    m_fileCursor += m_pcmLength;
+    // Read VGM data
+    readData (m_fileCursor);
+  }  
+}
+
+void VGMReader::pcmNewOffset()
+{
+  // Read the new pcm offset
+  uint32_t newOffset {0};
+  file.seekSet (m_fileCursor);
+  m_fileCursor += file.read (&newOffset, 4);  
+  m_bufCursor += 4;
+  //Serial.print ("PCM Offset: "); Serial.println (newOffset);
+  // Reset pcm cursor to start of buffer
+  m_pcmCursor = 0;
+  // Offset in file for the next pcm data chunk
+  m_pcmNextPage = m_pcmStart + newOffset + BUFSIZE;  
+  //Serial.print ("m_pcmNextPage: "); Serial.println (m_pcmNextPage);  
+  // Read BUFSIZE pcm data into pcm buffer
+  readData (m_pcmStart + newOffset, true);  
 }
 
 uint32_t VGMReader::getCursor()

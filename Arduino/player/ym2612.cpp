@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "ym2612.h"
 
-void YM2612Reset()
+void YM2612SetBus()
 {
   //for (auto pin : YM2612_PINS) pinMode (pin, OUTPUT);
   /* Pins setup */
@@ -10,12 +10,14 @@ void YM2612Reset()
 
   YM_CTRL_PORT |= _BV(YM_IC) | _BV(YM_CS) | _BV(YM_WR) | _BV(YM_RD); /* IC, CS, WR and RD HIGH by default */
   YM_CTRL_PORT &= ~(_BV(YM_A0) | _BV(YM_A1)); /* A0 and A1 LOW by default */
-  
+}
+void YM2612Reset()
+{
   /* Reset YM-2612 by 0 - 1 IC */
   YM_CTRL_PORT &= ~_BV(YM_IC);
-  _delay_ms(10);
+  delayMicroseconds(25);
   YM_CTRL_PORT |= _BV(YM_IC);
-  _delay_ms(10);
+  //delayMicroseconds(25);
 }
 
 /**
@@ -35,14 +37,15 @@ void _write_ym(uint8_t data) {
   YM_DATA_PORT = data;
 
   // Write data
-  _delay_us(1);
+  //_delay_us(1);
   YM_CTRL_PORT &= ~_BV(YM_WR);   
-  _delay_us(5);
+  //_delay_us(1);
   YM_CTRL_PORT |= _BV(YM_WR);
 
   // CS HIGH
-  _delay_us(5);
   YM_CTRL_PORT |= _BV(YM_CS); 
+  _delay_us(1);
+  
 }
 
 void YM2612WritePort0(uint8_t reg, uint8_t data) {

@@ -31,6 +31,7 @@
       Byte data to send to the audio chip.
 */
 void SN76489WriteData(char data) {
+digitalWrite (PSG_WE, 1); // _WE HIGH
 
 #ifdef ARDUINO_UNO
   // Envia bits 5-0 a PD7-PD2
@@ -51,7 +52,7 @@ void SN76489WriteData(char data) {
 
   // ~WE and ~CE low (active)
   digitalWrite(PSG_WE, 0); 
-  delayMicroseconds (10);  
+  delayMicroseconds (14);  
   // ~WE and ~CE high (inactive)
   digitalWrite(PSG_WE, 1);
 }
@@ -59,6 +60,7 @@ void SN76489WriteData(char data) {
 void SN76489SetBus() {
 // On all boards A0 is ~WE for SN-76489 and it's an OUTPUT.
   pinMode(PSG_WE, OUTPUT);
+  digitalWrite (PSG_WE, HIGH);
 }
 
 void SN76489_Off() {

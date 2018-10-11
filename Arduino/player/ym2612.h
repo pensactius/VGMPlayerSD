@@ -35,6 +35,7 @@ const uint8_t YM2612_PINS[] { YM_IC, YM_CS, YM_WR, YM_RD, YM_A0, YM_A1 };
 // Private function
 void _write_ym(uint8_t data);
 
+void YM2612SetBus();
 void YM2612Reset();
 
 /**
